@@ -61,7 +61,9 @@ class MainFragment : Fragment() {
     fun renderData(appState: AppState) {
         when (appState) {
             is AppState.Error -> {
+                binding.loadingLayout.visibility = View.GONE
                 val throwable = appState.error
+                Snackbar.make(binding.mainView, "ERROR: Loading Failed! ($throwable)", Snackbar.LENGTH_LONG).show()
             }
             AppState.Loading -> {
                 binding.loadingLayout.visibility = View.VISIBLE

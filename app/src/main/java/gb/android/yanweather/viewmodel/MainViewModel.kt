@@ -4,7 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import gb.android.yanweather.repository.Repository
 import gb.android.yanweather.repository.RepositoryImpl
+import java.lang.IllegalStateException
 import java.lang.Thread.sleep
+import java.util.*
 
 class MainViewModel(
     private val liveDataToObserve: MutableLiveData<AppState> = MutableLiveData(),
@@ -17,7 +19,11 @@ class MainViewModel(
         liveDataToObserve.postValue(AppState.Loading)
         Thread {
             sleep(2000)
-            liveDataToObserve.postValue(AppState.Success(repository.getWeatherFromRemoteSource()))
+
+            if (Math.random() * 2 > 1)
+                liveDataToObserve.postValue(AppState.Success(repository.getWeatherFromRemoteSource()))
+            else
+                liveDataToObserve.postValue(AppState.Error(IllegalStateException()))
         }.start()
     }
 
