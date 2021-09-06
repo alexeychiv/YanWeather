@@ -1,5 +1,5 @@
 <resources>
-	<string name="app_name">Lesson_1423_2_2_main</string>
+	<string name="app_name">YanWeather</string>
 	
 	<string name="temperature_label">Температура</string>
 	<string name="feels_like_label">Ощущается как</string>

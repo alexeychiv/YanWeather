@@ -1,8 +1,9 @@
 package gb.android.yanweather.view
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import gb.android.yanweather.R
+import gb.android.yanweather.view.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
 
