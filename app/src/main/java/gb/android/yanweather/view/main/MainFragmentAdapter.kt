@@ -13,7 +13,6 @@ import gb.android.yanweather.view.OnItemViewClickListener
 class MainFragmentAdapter : RecyclerView.Adapter<MainFragmentAdapter.MainFragmentViewHolder>() {
 
     private var weatherData: List<Weather> = listOf()
-    private var isDataSetRus: Boolean = true
     private lateinit var listener: OnItemViewClickListener
     fun setWeather(data: List<Weather>) {
         weatherData = data
@@ -33,9 +32,7 @@ class MainFragmentAdapter : RecyclerView.Adapter<MainFragmentAdapter.MainFragmen
         return holder;
     }
 
-    override fun onBindViewHolder(holder: MainFragmentViewHolder, position: Int) {
-        holder.render(weatherData[position])
-    }
+    override fun onBindViewHolder(holder: MainFragmentViewHolder, position: Int) = holder.render(weatherData[position])
 
     override fun getItemCount() = weatherData.size
 
@@ -43,12 +40,10 @@ class MainFragmentAdapter : RecyclerView.Adapter<MainFragmentAdapter.MainFragmen
         fun render(weather: Weather) {
             itemView.findViewById<TextView>(R.id.mainFragmentRecyclerItemTextView).text =
                 weather.city.name
-            itemView.setOnClickListener(object : View.OnClickListener {
-                override fun onClick(p0: View?) {
-                    Toast.makeText(itemView.context, "РАБОТАЕТ", Toast.LENGTH_SHORT).show()
-                    listener.onItemClick(weather)
-                }
-            })
+            itemView.setOnClickListener {
+                Toast.makeText(itemView.context, "РАБОТАЕТ", Toast.LENGTH_SHORT).show()
+                listener.onItemClick(weather)
+            }
         }
     }
 }

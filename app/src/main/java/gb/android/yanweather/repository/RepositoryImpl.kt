@@ -5,20 +5,12 @@ import gb.android.yanweather.domain.getRussianCities
 import gb.android.yanweather.domain.getWorldCities
 
 class RepositoryImpl : Repository {
-    override fun getWeatherFromRemoteSource(): Weather {
-        return Weather()
-    }
 
-    override fun getWeatherFromLocalSource(): Weather {
-        return Weather()
-    }
+    override fun getWeatherFromRemoteSource(): Weather = Weather()
 
-    override fun getWeatherFromLocalStorageRus(): List<Weather> {
-        return getRussianCities()
-    }
+    override fun getWeatherFromLocalSource(): Weather = Weather()
 
-    override fun getWeatherFromLocalStorageWorld(): List<Weather> {
-        return getWorldCities()
-    }
+    override fun getWeatherFromLocalStorageRus(): List<Weather> = getRussianCities()
 
+    override fun getWeatherFromLocalStorageWorld(): List<Weather> = getWorldCities()
 }

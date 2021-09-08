@@ -12,24 +12,20 @@ class MainViewModel(
 ) : ViewModel() {
 
     fun getLiveData() = liveDataToObserve
-
-    fun getWeatherFromLocalSourceWorld() {
-        getDataFromLocalSource(false)
-    }
-
-    fun getWeatherFromLocalSourceRus() {
-        getDataFromLocalSource(true)
-    }
+    fun getWeatherFromLocalSourceWorld() = getDataFromLocalSource(false)
+    fun getWeatherFromLocalSourceRus() = getDataFromLocalSource(true)
 
     fun getDataFromLocalSource(isRussian: Boolean) {
-        liveDataToObserve.postValue(AppState.Loading)
-        Thread {
-            sleep(500)
+        with (liveDataToObserve) {
+            postValue(AppState.Loading)
+            Thread {
+                sleep(500)
 
-            if (isRussian)
-                liveDataToObserve.postValue(AppState.Success(repository.getWeatherFromLocalStorageRus()))
-            else
-                liveDataToObserve.postValue(AppState.Success(repository.getWeatherFromLocalStorageWorld()))
-        }.start()
+                if (isRussian)
+                    postValue(AppState.Success(repository.getWeatherFromLocalStorageRus()))
+                else
+                    postValue(AppState.Success(repository.getWeatherFromLocalStorageWorld()))
+            }.start()
+        }
     }
 }

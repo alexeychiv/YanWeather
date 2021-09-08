@@ -24,7 +24,9 @@ class MainFragment : Fragment(), OnItemViewClickListener {
     private var isDataSetRus: Boolean = true
     private var adapter = MainFragmentAdapter()
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by lazy {
+        ViewModelProvider(this).get(MainViewModel::class.java)
+    }
 
     //===========================================================================================
     // COMPANION
@@ -40,7 +42,7 @@ class MainFragment : Fragment(), OnItemViewClickListener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -48,24 +50,24 @@ class MainFragment : Fragment(), OnItemViewClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.mainFragmentRecyclerView.adapter = adapter
-        adapter.setOnItemViewClickListener(this)
+        with(binding) {
+            mainFragmentRecyclerView.adapter = adapter
+            adapter.setOnItemViewClickListener(this@MainFragment)
 
-        binding.mainFragmentFAB.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                isDataSetRus = !isDataSetRus
+            with(mainFragmentFAB) {
+                setOnClickListener {
+                    isDataSetRus = !isDataSetRus
 
-                if (isDataSetRus) {
-                    viewModel.getWeatherFromLocalSourceRus()
-                    binding.mainFragmentFAB.setImageResource(R.drawable.ic_russia)
-                } else {
-                    viewModel.getWeatherFromLocalSourceWorld()
-                    binding.mainFragmentFAB.setImageResource(R.drawable.ic_earth)
+                    if (isDataSetRus) {
+                        viewModel.getWeatherFromLocalSourceRus()
+                        setImageResource(R.drawable.ic_russia)
+                    } else {
+                        viewModel.getWeatherFromLocalSourceWorld()
+                        setImageResource(R.drawable.ic_earth)
+                    }
                 }
             }
-        })
-
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        }
 
         viewModel.getLiveData()
             .observe(viewLifecycleOwner, Observer<AppState> { appState: AppState ->
@@ -88,7 +90,18 @@ class MainFragment : Fragment(), OnItemViewClickListener {
             is AppState.Error -> {
                 binding.mainFragmentLoadingLayout.visibility = View.GONE
                 val throwable = appState.error
-                Snackbar.make(binding.root, "ERROR $throwable", Snackbar.LENGTH_LONG).show()
+
+                binding.root.showSnackbarWithAction(
+                    binding.root,
+                    R.string.loading_error,
+                    Snackbar.LENGTH_LONG,
+                    R.string.try_again
+                ) {
+                    if (isDataSetRus)
+                        viewModel.getWeatherFromLocalSourceRus()
+                    else
+                        viewModel.getWeatherFromLocalSourceWorld()
+                }
             }
             AppState.Loading -> {
                 binding.mainFragmentLoadingLayout.visibility = View.VISIBLE
@@ -97,9 +110,31 @@ class MainFragment : Fragment(), OnItemViewClickListener {
                 binding.mainFragmentLoadingLayout.visibility = View.GONE
                 val weather = appState.weatherData
                 adapter.setWeather(weather)
-                Snackbar.make(binding.root, "Success", Snackbar.LENGTH_LONG).show()
+
+                binding.root.showSnackbarWithoutAction(
+                    binding.root,
+                    R.string.loading_success,
+                    Snackbar.LENGTH_SHORT
+                )
             }
         }
+    }
+
+    fun View.showSnackbarWithoutAction(view: View, strResultTextId: Int, length: Int) {
+        Snackbar.make(view, getString(strResultTextId), length).show()
+    }
+
+    fun View.showSnackbarWithAction(
+        view: View,
+        strResultTextId: Int,
+        length: Int,
+        strActionTextId: Int,
+        listener: View.OnClickListener
+    ) {
+        Snackbar
+            .make(view, getString(strResultTextId), length)
+            .setAction(getString(strActionTextId), listener)
+            .show()
     }
 
     //===========================================================================================
