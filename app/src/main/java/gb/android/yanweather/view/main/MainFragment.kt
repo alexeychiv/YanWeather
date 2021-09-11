@@ -12,6 +12,7 @@ import gb.android.yanweather.R
 import gb.android.yanweather.databinding.FragmentMainBinding
 import gb.android.yanweather.domain.Weather
 import gb.android.yanweather.view.OnItemViewClickListener
+import gb.android.yanweather.view.details.DetailsFragment
 import gb.android.yanweather.viewmodel.AppState
 import gb.android.yanweather.viewmodel.MainViewModel
 
