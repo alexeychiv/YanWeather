@@ -1,17 +1,21 @@
 package gb.android.yanweather.view.details
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.snackbar.Snackbar
 import gb.android.yanweather.R
 import gb.android.yanweather.databinding.FragmentDetailsBinding
 import gb.android.yanweather.domain.Weather
 import gb.android.yanweather.repository.WeatherDTO
-import gb.android.yanweather.repository.WeatherLoader
 import gb.android.yanweather.repository.WeatherLoaderListener
 
 
@@ -36,6 +40,23 @@ class DetailsFragment : Fragment(), WeatherLoaderListener {
     }
 
     //===========================================================================================
+    // BROADCAST RECEIVER
+
+    private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent?.let {
+                val weatherDTO = it.getParcelableExtra<WeatherDTO>(DETAILS_LOAD_RESULT_EXTRA)
+
+                if (weatherDTO != null) {
+                    showWeather(weatherDTO)
+                } else {
+                    onFailed(Throwable("Error Loading"))
+                }
+            }
+        }
+    }
+
+    //===========================================================================================
     // LIFECYCLE EVENTS
 
     override fun onCreateView(
@@ -53,12 +74,25 @@ class DetailsFragment : Fragment(), WeatherLoaderListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        WeatherLoader(this, localWeather.city.lat, localWeather.city.lon).loadWeather()
+
+        //WeatherLoader(this, localWeather.city.lat, localWeather.city.lon).loadWeather()
+
+        val intent = Intent(requireActivity(), DetailsService::class.java)
+        intent.putExtra(LATITUDE_EXTRA, localWeather.city.lat)
+        intent.putExtra(LONGITUDE_EXTRA, localWeather.city.lon)
+
+        requireActivity().startService(intent)
+
+        LocalBroadcastManager.getInstance(requireActivity())
+            .registerReceiver(receiver, IntentFilter(DETAILS_INTENT_FILTER))
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+
+        LocalBroadcastManager.getInstance((requireActivity()))
+            .unregisterReceiver(receiver)
     }
 
     //===========================================================================================
@@ -85,8 +119,11 @@ class DetailsFragment : Fragment(), WeatherLoaderListener {
             cityCoordinates.text = "lat ${localWeather.city.lat}\nlon ${localWeather.city.lon}"
             temperatureValue.text = weatherDTO.fact.temp.toString()
             feelsLikeValue.text = "${weatherDTO.fact.feels_like}"
-            weatherCondition.text = weatherDTO.fact.condition
+            weatherCondition.text = getStringResourceByName(weatherDTO.fact.condition.replace('-', '_'))
         })
     }
 
+    private fun getStringResourceByName(str : String) :String{
+        return getString(resources.getIdentifier(str, "string", requireActivity().packageName))
+    }
 }

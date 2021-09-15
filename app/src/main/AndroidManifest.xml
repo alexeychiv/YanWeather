@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="gb.android.yanweather">
 	
-	<uses-permission android:name="android.permission.INTERNET"/>
+	<uses-permission android:name="android.permission.INTERNET" />
 	
 	<application
 		android:allowBackup="true"
@@ -11,15 +11,28 @@
 		android:roundIcon="@mipmap/ic_launcher_round"
 		android:supportsRtl="true"
 		android:theme="@style/Theme.YanWeather">
+		
 		<activity
 			android:name=".view.MainActivity"
 			android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
-
+				
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+		
+		<service android:name=".view.details.DetailsService" />
+	
+	<receiver android:name=".view.MainBroadcastReceiver"
+		android:exported="true">
+		<intent-filter>
+			<action android:name="android.intent.action.AIRPLANE_MODE" />
+		</intent-filter>
+	</receiver>
+	
 	</application>
+	
+
 
 </manifest>
