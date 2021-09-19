@@ -21,7 +21,10 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.fragment_container, MainFragment.newInstance())
                 .commit()
 
-        registerReceiver(mainBroadcastReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+        registerReceiver(
+            mainBroadcastReceiver,
+            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        )
     }
 
     override fun onDestroy() {
@@ -29,5 +32,4 @@ class MainActivity : AppCompatActivity() {
 
         unregisterReceiver(mainBroadcastReceiver)
     }
-
 }

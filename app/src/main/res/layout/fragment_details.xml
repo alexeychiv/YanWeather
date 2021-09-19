@@ -8,12 +8,24 @@
 	android:focusable="true"
 	android:background="#FFFFFF">
 	
+	<ImageView
+		android:id="@+id/ivHeader"
+		android:layout_width="match_parent"
+		android:layout_height="80dp"
+		android:scaleType="fitXY" />
+	
 	<LinearLayout
 		android:id="@+id/mainView"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:gravity="center"
 		android:orientation="vertical">
+		
+		<ImageView
+			android:id="@+id/ivIcon"
+			android:layout_width="100dp"
+			android:layout_height="100dp"
+			android:scaleType="fitXY" />
 		
 		<TextView
 			android:id="@+id/cityName"
@@ -25,6 +37,13 @@
 			tools:text="Москва" />
 		
 		<TextView
+			android:id="@+id/cityCoordinates"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="5dp"
+			tools:text="lt/ln: 55.755826, 37.617299900000035" />
+		
+		<TextView
 			android:id="@+id/weatherCondition"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -32,7 +51,7 @@
 			android:textSize="@dimen/feels_like_text_size"
 			android:textStyle="bold"
 			tools:text="Облачно" />
-			
+		
 		<TextView
 			android:id="@+id/temperatureLabel"
 			android:layout_width="wrap_content"
@@ -40,13 +59,7 @@
 			android:layout_marginTop="@dimen/margin_15_dp"
 			android:text="@string/temperature_label" />
 		
-		<TextView
-			android:id="@+id/cityCoordinates"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="5dp"
-			tools:text="lt/ln: 55.755826, 37.617299900000035" />
-			
+		
 		<TextView
 			android:id="@+id/temperatureValue"
 			android:layout_width="wrap_content"

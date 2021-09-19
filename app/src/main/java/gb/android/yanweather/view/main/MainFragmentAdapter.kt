@@ -25,14 +25,14 @@ class MainFragmentAdapter : RecyclerView.Adapter<MainFragmentAdapter.MainFragmen
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainFragmentViewHolder {
-        val holder = MainFragmentViewHolder(
+        return MainFragmentViewHolder(
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.fragment_main_recycler_item, parent, false)
         )
-        return holder;
     }
 
-    override fun onBindViewHolder(holder: MainFragmentViewHolder, position: Int) = holder.render(weatherData[position])
+    override fun onBindViewHolder(holder: MainFragmentViewHolder, position: Int) =
+        holder.render(weatherData[position])
 
     override fun getItemCount() = weatherData.size
 
@@ -41,7 +41,7 @@ class MainFragmentAdapter : RecyclerView.Adapter<MainFragmentAdapter.MainFragmen
             itemView.findViewById<TextView>(R.id.mainFragmentRecyclerItemTextView).text =
                 weather.city.name
             itemView.setOnClickListener {
-                Toast.makeText(itemView.context, "РАБОТАЕТ", Toast.LENGTH_SHORT).show()
+                Toast.makeText(itemView.context, "SUCCESS", Toast.LENGTH_SHORT).show()
                 listener.onItemClick(weather)
             }
         }

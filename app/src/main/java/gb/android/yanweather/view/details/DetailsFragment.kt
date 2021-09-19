@@ -1,25 +1,32 @@
 package gb.android.yanweather.view.details
 
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.lifecycle.ViewModelProvider
+import coil.ImageLoader
+import coil.decode.SvgDecoder
+import coil.load
+import coil.request.ImageRequest
 import com.google.android.material.snackbar.Snackbar
 import gb.android.yanweather.R
 import gb.android.yanweather.databinding.FragmentDetailsBinding
 import gb.android.yanweather.domain.Weather
-import gb.android.yanweather.repository.WeatherDTO
-import gb.android.yanweather.repository.WeatherLoaderListener
+import gb.android.yanweather.utils.showActionSnackbar
+import gb.android.yanweather.utils.showSnackbar
+import gb.android.yanweather.viewmodel.DetailsState
+import gb.android.yanweather.viewmodel.DetailsViewModel
 
 
-class DetailsFragment : Fragment(), WeatherLoaderListener {
+class DetailsFragment : Fragment() {
+
+    private val viewModel: DetailsViewModel by lazy {
+        ViewModelProvider(this).get(DetailsViewModel::class.java)
+    }
 
     private var _binding: FragmentDetailsBinding? = null
     private val binding: FragmentDetailsBinding
@@ -37,23 +44,6 @@ class DetailsFragment : Fragment(), WeatherLoaderListener {
         }
 
         const val BUNDLE_WEATHER_KEY = "key"
-    }
-
-    //===========================================================================================
-    // BROADCAST RECEIVER
-
-    private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            intent?.let {
-                val weatherDTO = it.getParcelableExtra<WeatherDTO>(DETAILS_LOAD_RESULT_EXTRA)
-
-                if (weatherDTO != null) {
-                    showWeather(weatherDTO)
-                } else {
-                    onFailed(Throwable("Error Loading"))
-                }
-            }
-        }
     }
 
     //===========================================================================================
@@ -75,55 +65,89 @@ class DetailsFragment : Fragment(), WeatherLoaderListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //WeatherLoader(this, localWeather.city.lat, localWeather.city.lon).loadWeather()
+        viewModel.getLiveData().observe(viewLifecycleOwner, {
+            renderData(it)
+        })
 
-        val intent = Intent(requireActivity(), DetailsService::class.java)
-        intent.putExtra(LATITUDE_EXTRA, localWeather.city.lat)
-        intent.putExtra(LONGITUDE_EXTRA, localWeather.city.lon)
-
-        requireActivity().startService(intent)
-
-        LocalBroadcastManager.getInstance(requireActivity())
-            .registerReceiver(receiver, IntentFilter(DETAILS_INTENT_FILTER))
+        getWeather()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-
-        LocalBroadcastManager.getInstance((requireActivity()))
-            .unregisterReceiver(receiver)
-    }
-
-    //===========================================================================================
-    // WeatherLoaderListener EVENTS
-
-    override fun onLoaded(weatherDTO: WeatherDTO) {
-        showWeather(weatherDTO)
-    }
-
-    override fun onFailed(throwable: Throwable) {
-        Snackbar
-            .make(binding.root, R.string.loading_error, Snackbar.LENGTH_LONG)
-            .show()
     }
 
     //===========================================================================================
     // DATA UTILS
 
+    private fun getWeather() {
+        viewModel.getWeatherFromRemoteSource(localWeather.city.lat, localWeather.city.lon)
+    }
+
+    private fun renderData(detailsState: DetailsState) {
+        when (detailsState) {
+            is DetailsState.Error -> {
+                binding.loadingLayout.visibility = View.INVISIBLE
+                binding.mainView.visibility = View.VISIBLE
+                val throwable = detailsState.error
+                view?.showActionSnackbar(
+                    R.string.loading_error,
+                    Snackbar.LENGTH_LONG,
+                    R.string.try_again
+                ) {
+                    getWeather()
+                }
+            }
+
+            DetailsState.Loading -> {
+                binding.loadingLayout.visibility = View.VISIBLE
+                binding.mainView.visibility = View.INVISIBLE
+            }
+
+            is DetailsState.Success -> {
+                binding.loadingLayout.visibility = View.INVISIBLE
+                binding.mainView.visibility = View.VISIBLE
+                val weather = detailsState.weatherData
+                showWeather(weather)
+                view?.showSnackbar(R.string.loading_success, Snackbar.LENGTH_LONG)
+            }
+        }
+    }
+
     @SuppressLint("SetTextI18n")
-    private fun showWeather(weatherDTO: WeatherDTO) {
+    private fun showWeather(weather: Weather) {
 
         with(binding, {
             cityName.text = localWeather.city.name
             cityCoordinates.text = "lat ${localWeather.city.lat}\nlon ${localWeather.city.lon}"
-            temperatureValue.text = weatherDTO.fact.temp.toString()
-            feelsLikeValue.text = "${weatherDTO.fact.feels_like}"
-            weatherCondition.text = getStringResourceByName(weatherDTO.fact.condition.replace('-', '_'))
+            temperatureValue.text = weather.temperature.toString()
+            feelsLikeValue.text = "${weather.feelsLike}"
+            weatherCondition.text = getStringResourceByName(weather.condition.replace('-', '_'))
+
+            binding.ivHeader.load("https://freepngimg.com/thumb/city/36275-3-city-hd.png")
+
+            binding.ivIcon.loadIconFromURL("https://yastatic.net/weather/i/icons/blueye/color/svg/${weather.icon}.svg")
         })
     }
 
-    private fun getStringResourceByName(str : String) :String{
+    private fun getStringResourceByName(str: String): String {
         return getString(resources.getIdentifier(str, "string", requireActivity().packageName))
     }
+
+    private fun ImageView.loadIconFromURL(url: String) {
+
+        val imageLoader = ImageLoader.Builder(this.context)
+            .componentRegistry { add(SvgDecoder(this@loadIconFromURL.context)) }
+            .build()
+
+        val request = ImageRequest.Builder(this.context)
+            .crossfade(true)
+            .crossfade(500)
+            .data(url)
+            .target(this)
+            .build()
+
+        imageLoader.enqueue(request)
+    }
+
 }

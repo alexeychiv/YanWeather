@@ -11,9 +11,11 @@ import com.google.android.material.snackbar.Snackbar
 import gb.android.yanweather.R
 import gb.android.yanweather.databinding.FragmentMainBinding
 import gb.android.yanweather.domain.Weather
+import gb.android.yanweather.utils.showActionSnackbar
+import gb.android.yanweather.utils.showSnackbar
 import gb.android.yanweather.view.OnItemViewClickListener
 import gb.android.yanweather.view.details.DetailsFragment
-import gb.android.yanweather.viewmodel.AppState
+import gb.android.yanweather.viewmodel.MainState
 import gb.android.yanweather.viewmodel.MainViewModel
 
 class MainFragment : Fragment(), OnItemViewClickListener {
@@ -71,8 +73,8 @@ class MainFragment : Fragment(), OnItemViewClickListener {
         }
 
         viewModel.getLiveData()
-            .observe(viewLifecycleOwner, Observer<AppState> { appState: AppState ->
-                renderData(appState)
+            .observe(viewLifecycleOwner, Observer<MainState> { mainState: MainState ->
+                renderData(mainState)
             })
 
         viewModel.getWeatherFromLocalSourceRus()
@@ -86,16 +88,15 @@ class MainFragment : Fragment(), OnItemViewClickListener {
     //===========================================================================================
     // RENDER
 
-    fun renderData(appState: AppState) {
-        when (appState) {
-            is AppState.Error -> {
+    private fun renderData(mainState: MainState) {
+        when (mainState) {
+            is MainState.Error -> {
                 binding.mainFragmentLoadingLayout.visibility = View.GONE
-                val throwable = appState.error
+                val throwable = mainState.error
 
-                binding.root.showSnackbarWithAction(
-                    binding.root,
+                binding.root.showActionSnackbar(
                     R.string.loading_error,
-                    Snackbar.LENGTH_LONG,
+                    Snackbar.LENGTH_SHORT,
                     R.string.try_again
                 ) {
                     if (isDataSetRus)
@@ -104,38 +105,22 @@ class MainFragment : Fragment(), OnItemViewClickListener {
                         viewModel.getWeatherFromLocalSourceWorld()
                 }
             }
-            AppState.Loading -> {
+
+            MainState.Loading -> {
                 binding.mainFragmentLoadingLayout.visibility = View.VISIBLE
             }
-            is AppState.Success -> {
+
+            is MainState.Success -> {
                 binding.mainFragmentLoadingLayout.visibility = View.GONE
-                val weather = appState.weatherData
+                val weather = mainState.weatherData
                 adapter.setWeather(weather)
 
-                binding.root.showSnackbarWithoutAction(
-                    binding.root,
+                binding.root.showSnackbar(
                     R.string.loading_success,
                     Snackbar.LENGTH_SHORT
                 )
             }
         }
-    }
-
-    fun View.showSnackbarWithoutAction(view: View, strResultTextId: Int, length: Int) {
-        Snackbar.make(view, getString(strResultTextId), length).show()
-    }
-
-    fun View.showSnackbarWithAction(
-        view: View,
-        strResultTextId: Int,
-        length: Int,
-        strActionTextId: Int,
-        listener: View.OnClickListener
-    ) {
-        Snackbar
-            .make(view, getString(strResultTextId), length)
-            .setAction(getString(strActionTextId), listener)
-            .show()
     }
 
     //===========================================================================================
