@@ -27,7 +27,9 @@ class DetailsViewModel(
     }
 
     fun saveWeather(weather: Weather) {
-        historyRepositoryImpl.saveEntity(weather)
+        Thread {
+            historyRepositoryImpl.saveEntity(weather)
+        }.start()
     }
 
     private val callback = object : retrofit2.Callback<WeatherDTO> {
