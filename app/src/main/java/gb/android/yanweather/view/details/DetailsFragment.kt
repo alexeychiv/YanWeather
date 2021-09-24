@@ -65,9 +65,9 @@ class DetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getLiveData().observe(viewLifecycleOwner, {
+        viewModel.getLiveData().observe(viewLifecycleOwner) {
             renderData(it)
-        })
+        }
 
         getWeather()
     }
@@ -108,6 +108,14 @@ class DetailsFragment : Fragment() {
                 binding.loadingLayout.visibility = View.INVISIBLE
                 binding.mainView.visibility = View.VISIBLE
                 val weather = detailsState.weatherData
+                viewModel.saveWeather(
+                    Weather(
+                        localWeather.city,
+                        weather.temperature,
+                        weather.feelsLike,
+                        weather.condition
+                    )
+                )
                 showWeather(weather)
                 view?.showSnackbar(R.string.loading_success, Snackbar.LENGTH_LONG)
             }
