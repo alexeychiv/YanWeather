@@ -5,25 +5,46 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 	
+	<androidx.appcompat.widget.AppCompatEditText
+		android:id="@+id/et_cityFilter"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/search"
+		android:textSize="@dimen/city_filter_text_size"
+		android:maxLines="1"
+		android:inputType="text"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
+	
+	<FrameLayout
+		android:id="@+id/divider"
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="@color/black"
+		app:layout_constraintTop_toBottomOf="@+id/et_cityFilter"
+		tools:layout_editor_absoluteX="-16dp" />
+	
 	<androidx.recyclerview.widget.RecyclerView
 		android:id="@+id/mainFragmentRecyclerView"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
 		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.0"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
+		app:layout_constraintTop_toBottomOf="@+id/divider" />
 	
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
 		android:id="@+id/mainFragmentFAB"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_margin="15dp"
-		app:tint="@null"
 		android:src="@drawable/ic_russia"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:maxImageSize="56dp" />
+		app:maxImageSize="56dp"
+		app:tint="@null" />
 	
 	<FrameLayout
 		android:id="@+id/mainFragmentLoadingLayout"
@@ -38,5 +59,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center" />
+	
 	</FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

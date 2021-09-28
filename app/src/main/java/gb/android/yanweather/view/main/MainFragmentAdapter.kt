@@ -12,8 +12,9 @@ import gb.android.yanweather.view.OnItemViewClickListener
 
 class MainFragmentAdapter : RecyclerView.Adapter<MainFragmentAdapter.MainFragmentViewHolder>() {
 
-    private var weatherData: List<Weather> = listOf()
+    private var weatherData: List<Weather> = ArrayList()
     private lateinit var listener: OnItemViewClickListener
+
     fun setWeather(data: List<Weather>) {
         weatherData = data
         notifyDataSetChanged()
@@ -22,7 +23,6 @@ class MainFragmentAdapter : RecyclerView.Adapter<MainFragmentAdapter.MainFragmen
     fun setOnItemViewClickListener(onItemViewClickListener: OnItemViewClickListener) {
         listener = onItemViewClickListener
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainFragmentViewHolder {
         return MainFragmentViewHolder(

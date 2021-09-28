@@ -36,6 +36,7 @@
 	<string name="day">День</string>
 	<string name="evening">вечер</string>
 	<string name="history">History</string>
+	<string name="search">Search…</string>
 
 
 </resources>

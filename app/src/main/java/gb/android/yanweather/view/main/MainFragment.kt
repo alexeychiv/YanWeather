@@ -1,9 +1,11 @@
 package gb.android.yanweather.view.main
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -18,7 +20,7 @@ import gb.android.yanweather.view.details.DetailsFragment
 import gb.android.yanweather.viewmodel.MainState
 import gb.android.yanweather.viewmodel.MainViewModel
 
-class MainFragment : Fragment(), OnItemViewClickListener {
+class MainFragment : Fragment(), OnItemViewClickListener, TextView.OnEditorActionListener {
 
     private var _binding: FragmentMainBinding? = null
     private val binding: FragmentMainBinding
@@ -30,6 +32,8 @@ class MainFragment : Fragment(), OnItemViewClickListener {
     private val viewModel: MainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
     }
+
+    private var weatherData: List<Weather> = ArrayList()
 
     //===========================================================================================
     // COMPANION
@@ -70,6 +74,8 @@ class MainFragment : Fragment(), OnItemViewClickListener {
                     }
                 }
             }
+
+            etCityFilter.setOnEditorActionListener(this@MainFragment)
         }
 
         viewModel.getLiveData()
@@ -112,8 +118,9 @@ class MainFragment : Fragment(), OnItemViewClickListener {
 
             is MainState.Success -> {
                 binding.mainFragmentLoadingLayout.visibility = View.GONE
-                val weather = mainState.weatherData
-                adapter.setWeather(weather)
+                weatherData = mainState.weatherData
+
+                adapter.setWeather(filterWeatherData())
 
                 binding.root.showSnackbar(
                     R.string.loading_success,
@@ -134,5 +141,33 @@ class MainFragment : Fragment(), OnItemViewClickListener {
             .add(R.id.fragment_container, DetailsFragment.newInstance(bundle))
             .addToBackStack("")
             .commit()
+    }
+
+    //===========================================================================================
+    // ON EDITOR ACTION
+
+    override fun onEditorAction(p0: TextView?, p1: Int, p2: KeyEvent?): Boolean {
+        if (p1 == 5) {
+            adapter.setWeather(filterWeatherData())
+        }
+
+        return true
+    }
+
+    //===========================================================================================
+    // CITY FILTER
+
+    private fun filterWeatherData(): List<Weather> {
+        if (binding.etCityFilter.text.toString() == "")
+            return weatherData
+
+        val filteredWeatherData: MutableList<Weather> = ArrayList()
+
+        weatherData.forEach {
+            if (it.city.toString().contains(binding.etCityFilter.text.toString(), true))
+                filteredWeatherData.add(it)
+        }
+
+        return filteredWeatherData
     }
 }
