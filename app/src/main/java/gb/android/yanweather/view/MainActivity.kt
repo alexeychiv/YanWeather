@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import gb.android.yanweather.R
 import gb.android.yanweather.view.history.HistoryFragment
 import gb.android.yanweather.view.main.MainFragment
+import gb.android.yanweather.view.map.MapFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -46,6 +47,13 @@ class MainActivity : AppCompatActivity() {
             R.id.action_open_fragment_history -> {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, HistoryFragment.newInstance())
+                    .addToBackStack("")
+                    .commit()
+                true
+            }
+            R.id.action_open_map -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, MapFragment.newInstance())
                     .addToBackStack("")
                     .commit()
                 true
