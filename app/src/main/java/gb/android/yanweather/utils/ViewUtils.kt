@@ -17,6 +17,21 @@ fun View.showSnackbar(
         .show()
 }
 
+fun View.showSnackbarAnchorView(
+    messageId: Int,
+    length: Int,
+    view: View
+) {
+    Snackbar
+        .make(
+            this,
+            this.context.getString(messageId),
+            length
+        )
+        .setAnchorView(view)
+        .show()
+}
+
 fun View.showActionSnackbar(
     messageId: Int,
     length: Int,

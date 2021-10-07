@@ -38,6 +38,7 @@
 	<string name="history">History</string>
 	<string name="search">Search…</string>
 	<string name="map">Map</string>
-
+	
+	<string name="address_not_found">Address was not found!</string>
 
 </resources>

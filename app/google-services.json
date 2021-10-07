@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "921471486636",
+    "project_id": "yanweather",
+    "storage_bucket": "yanweather.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:921471486636:android:370a206664611cbc63ad09",
+        "android_client_info": {
+          "package_name": "gb.android.yanweather"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "921471486636-29im40co3gnmomqmtbn3fblq7sk0n37q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHz2u20fureCHv11m57B1lBlst_4sUB-A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "921471486636-29im40co3gnmomqmtbn3fblq7sk0n37q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

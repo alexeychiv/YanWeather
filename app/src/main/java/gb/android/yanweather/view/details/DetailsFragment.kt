@@ -132,7 +132,10 @@ class DetailsFragment : Fragment() {
             feelsLikeValue.text = "${weather.feelsLike}"
             weatherCondition.text = getStringResourceByName(weather.condition.replace('-', '_'))
 
-            binding.ivHeader.load("https://freepngimg.com/thumb/city/36275-3-city-hd.png")
+            binding.ivHeader.load("https://freepngimg.com/thumb/city/36275-3-city-hd.png") {
+                placeholder(R.drawable.ic_action_loading)
+                error(R.drawable.ic_action_error_loading)
+            }
 
             binding.ivIcon.loadIconFromURL("https://yastatic.net/weather/i/icons/blueye/color/svg/${weather.icon}.svg")
         })

@@ -2,14 +2,9 @@ package gb.android.yanweather.view.map
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Geocoder
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,9 +17,10 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.snackbar.Snackbar
 import gb.android.yanweather.R
-import gb.android.yanweather.databinding.FragmentMapBinding
 import gb.android.yanweather.databinding.FragmentSearchMapBinding
+import gb.android.yanweather.utils.showSnackbarAnchorView
 
 class MapFragment : Fragment() {
 
@@ -57,17 +53,25 @@ class MapFragment : Fragment() {
             val geocoder = Geocoder(requireContext())
             val addressRow = binding.searchAddress.text.toString()
             val address = geocoder.getFromLocationName(addressRow, 1)
-            val location = LatLng(address[0].latitude, address[0].longitude)
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12f))
+            if (address.isNotEmpty()) {
+                val location = LatLng(address[0].latitude, address[0].longitude)
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12f))
 
-            var addressString =
-                "${address[0].countryName}, ${address[0].locality}, ${address[0].thoroughfare}, ${address[0].subThoroughfare}"
+                var addressString =
+                    "${address[0].countryName}, ${address[0].locality}, ${address[0].thoroughfare}, ${address[0].subThoroughfare}"
 
-            map.addMarker(
-                MarkerOptions()
-                    .title(addressString)
-                    .position(location)
-            )
+                map.addMarker(
+                    MarkerOptions()
+                        .title(addressString)
+                        .position(location)
+                )
+            } else {
+                binding.root.showSnackbarAnchorView(
+                    R.string.address_not_found,
+                    Snackbar.LENGTH_SHORT,
+                    binding.snackbarAnchor
+                )
+            }
         }
     }
 

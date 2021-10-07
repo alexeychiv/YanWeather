@@ -3,9 +3,11 @@ package gb.android.yanweather.view
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.messaging.FirebaseMessaging
 import gb.android.yanweather.R
 import gb.android.yanweather.view.history.HistoryFragment
 import gb.android.yanweather.view.main.MainFragment
@@ -29,6 +31,12 @@ class MainActivity : AppCompatActivity() {
             mainBroadcastReceiver,
             IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         )
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { it ->
+            if (it.isSuccessful) {
+                Log.d("BLAH", it.result.toString())
+            }
+        }
     }
 
     override fun onDestroy() {
